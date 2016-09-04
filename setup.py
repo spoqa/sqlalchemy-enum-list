@@ -54,7 +54,7 @@ else:
 
 setup(
     name='SQLAlchemy-Enum-List',
-    description='',
+    description='Store list of enum member.',
     long_description=readme(),
     version=get_version(),
     setup_requires=setup_requires,
