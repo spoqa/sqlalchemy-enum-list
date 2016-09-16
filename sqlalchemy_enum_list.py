@@ -4,7 +4,7 @@ from six import text_type
 from sqlalchemy.types import TypeDecorator, UnicodeText
 
 __all__ = 'EnumListType', 'EnumListTypeException', 'EnumSetType', '__version__'
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 
 class EnumListTypeException(ValueError):

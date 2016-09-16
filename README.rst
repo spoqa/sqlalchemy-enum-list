@@ -33,3 +33,13 @@ Getting started
        genre = Column(EnumListType(Genre, int))
 
    song = Song(genre=[Genre.soul, Genre.jazz])
+
+
+Changelogs
+==========
+
+
+0.1.1
+*****
+
+* Added ``sqlalchemy_enum_list.EnumSetType``
