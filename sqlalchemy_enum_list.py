@@ -3,7 +3,7 @@ import enum
 from six import text_type
 from sqlalchemy.types import TypeDecorator, UnicodeText
 
-__all__ = 'EnumListType', 'EnumListTypeException', '__version__'
+__all__ = 'EnumListType', 'EnumListTypeException', 'EnumSetType', '__version__'
 __version__ = '0.1.0'
 
 
@@ -82,3 +82,22 @@ class EnumListType(TypeDecorator):
                 self.enum_cls(self.coerce_func(v))
                 for v in value.split(self.separator)
             ]
+
+
+class EnumSetType(EnumListType):
+
+    def process_bind_param(self, value, dialect):
+        if value is not None:
+            if not all(item in self.enum_cls for item in value):
+                raise EnumListTypeException(
+                    "Set values have to be member of {!r}.".format(
+                        self.enum_cls
+                    )
+                )
+            return self.separator.join(
+                {text_type(item.value) for item in value}
+            )
+
+    def process_result_value(self, value, dialect):
+        if value is not None:
+            return set(super().process_result_value(value, dialect))

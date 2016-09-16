@@ -15,7 +15,8 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 from sqlalchemy.schema import Column
 from sqlalchemy.types import Integer
-from sqlalchemy_enum_list import EnumListType, EnumListTypeException
+from sqlalchemy_enum_list import (EnumListType, EnumListTypeException,
+                                  EnumSetType)
 
 
 Base = declarative_base()
@@ -82,6 +83,8 @@ class EnumTest(Base):
 
     str_column = Column(EnumListType(StrEnum, str))
 
+    str_column_set = Column(EnumSetType(StrEnum, str))
+
     __tablename__ = 'enum_test'
 
 
@@ -110,5 +113,27 @@ def test_enum_list_init_exception(fx_session):
 
 def test_enum_list_bind_exception(fx_session):
     fx_session.add(EnumTest(str_column='a'))
+    with raises(StatementError):
+        fx_session.flush()
+
+
+def test_enum_set(fx_session):
+    entity = EnumTest(str_column_set={StrEnum.a, StrEnum.a, StrEnum.b})
+    fx_session.add(entity)
+    fx_session.flush()
+    assert entity.str_column_set == {StrEnum.a, StrEnum.b}
+
+
+def test_enum_set_init_exception(fx_session):
+    with raises(EnumListTypeException):
+        EnumSetType(StrEnum, float, 'a')
+    with raises(EnumListTypeException):
+        EnumSetType(StrEnum, float)
+    with raises(EnumListTypeException):
+        EnumSetType(int, str)
+
+
+def test_enum_set_bind_exception(fx_session):
+    fx_session.add(EnumTest(str_column_set={'a'}))
     with raises(StatementError):
         fx_session.flush()
